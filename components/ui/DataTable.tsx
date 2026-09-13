@@ -25,19 +25,19 @@ export default function DataTable() {
   for (let i = startIndex; i < endIndex; i++) visible.push(rowAt(i));
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-800">
-      <div className="grid grid-cols-[1fr_1fr_1fr] border-b border-slate-800 bg-slate-900/80 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-800/80">
+      <div className="sticky top-0 z-10 grid grid-cols-[1fr_1fr_1fr] border-b border-slate-800 bg-slate-900 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
         <span>Timestamp</span>
         <span>Category</span>
         <span className="text-right">Value</span>
       </div>
-      <div className="flex-1 overflow-auto" onScroll={onScroll}>
+      <div className="scroll-slim flex-1 overflow-auto" onScroll={onScroll}>
         <div style={{ height: totalHeight, position: 'relative' }}>
           <div style={{ transform: `translateY(${offsetY}px)` }}>
             {visible.map((p, i) => (
               <div
                 key={`${p.timestamp}-${startIndex + i}`}
-                className="grid grid-cols-[1fr_1fr_1fr] items-center px-3 tabular-nums hover:bg-slate-800/60"
+                className={`grid grid-cols-[1fr_1fr_1fr] items-center px-3 tabular-nums hover:bg-sky-500/5 ${(startIndex + i) % 2 ? "bg-slate-950/40" : ""}`}
                 style={{ height: ROW_HEIGHT }}
               >
                 <span className="text-xs text-slate-400">{formatTime(p.timestamp)}</span>
@@ -54,7 +54,7 @@ export default function DataTable() {
           </div>
         </div>
       </div>
-      <div className="border-t border-slate-800 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-500">
+      <div className="border-t border-slate-800/80 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-500">
         {total.toLocaleString()} rows · rendering {visible.length} (virtualized)
       </div>
     </div>

@@ -20,8 +20,8 @@ function TimeRangeSelectorInner() {
             onClick={() => dispatch({ type: 'set-time-range', preset: p })}
             className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
               timeRangePreset === p
-                ? 'bg-sky-600 text-white'
-                : 'border border-slate-700 text-slate-300 hover:bg-slate-800'
+                ? 'bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/40'
+                : 'border border-slate-700/80 text-slate-300 hover:border-slate-600 hover:bg-slate-800/70 focus-visible:outline focus-visible:ring-1 focus-visible:ring-sky-500/60'
             }`}
           >
             {p === 'all' ? 'All' : p}
@@ -36,8 +36,8 @@ function TimeRangeSelectorInner() {
             onClick={() => dispatch({ type: 'set-aggregation', aggregation: a })}
             className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
               aggregation === a
-                ? 'bg-sky-600 text-white'
-                : 'border border-slate-700 text-slate-300 hover:bg-slate-800'
+                ? 'bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/40'
+                : 'border border-slate-700/80 text-slate-300 hover:border-slate-600 hover:bg-slate-800/70 focus-visible:outline focus-visible:ring-1 focus-visible:ring-sky-500/60'
             }`}
           >
             {a === 'raw' ? 'Raw' : a}

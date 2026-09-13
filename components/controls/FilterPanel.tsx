@@ -23,7 +23,7 @@ function FilterPanelInner() {
               className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs capitalize transition-colors ${
                 visibleCategories[c]
                   ? 'border-slate-600 bg-slate-800 text-slate-200'
-                  : 'border-slate-800 bg-transparent text-slate-500'
+                  : 'border-slate-800/60 bg-transparent text-slate-500 hover:text-slate-400'
               }`}
               aria-pressed={visibleCategories[c]}
             >
@@ -104,8 +104,8 @@ function FilterPanelInner() {
           onClick={() => dispatch({ type: 'set-stress', stress: !stress })}
           className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
             stress
-              ? 'bg-rose-600 text-white hover:bg-rose-500'
-              : 'border border-slate-700 text-slate-300 hover:bg-slate-800'
+              ? 'bg-rose-600/90 text-white shadow-sm shadow-rose-900/40 hover:bg-rose-500 active:scale-[0.97]'
+              : 'border border-slate-700/80 text-slate-300 hover:border-slate-600 hover:bg-slate-800/70 focus-visible:outline focus-visible:ring-1 focus-visible:ring-sky-500/60'
           }`}
         >
           {stress ? 'Stress test ON' : 'Enable stress test'}

@@ -2,26 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #e2e8f0;
+  background: #020617;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* thin dark scrollbars for data panels */
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+  }
+  .scroll-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 8px;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+  .scroll-slim::-webkit-scrollbar-track {
+    background: transparent;
   }
 }

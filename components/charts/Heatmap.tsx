@@ -89,6 +89,22 @@ export default function Heatmap() {
           ))}
         {size.width > 0 && (
           <>
+            <defs>
+              <linearGradient id="heatLegend" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="rgb(15,23,42)" />
+                <stop offset="100%" stopColor="rgb(71,212,255)" />
+              </linearGradient>
+            </defs>
+            {/* intensity legend */}
+            <g>
+              <rect x={size.width - MARGIN.right - 120} y={2} width={84} height={6} rx={3} fill="url(#heatLegend)" stroke="rgba(148,163,184,0.3)" strokeWidth={0.5} />
+              <text x={size.width - MARGIN.right - 126} y={2} dy="6" textAnchor="end" className="fill-slate-500">
+                low
+              </text>
+              <text x={size.width - MARGIN.right - 32} y={2} dy="6" textAnchor="start" className="fill-slate-400">
+                high
+              </text>
+            </g>
             <text x={MARGIN.left} y={size.height - 8} textAnchor="start" className="fill-slate-400">
               {formatTime(grid.t0)}
             </text>

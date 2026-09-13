@@ -165,12 +165,14 @@ export default function LineChart() {
       const bins = Math.max(10, Math.floor((right - left) * 2));
       // don't connect lines across time gaps (window shift, sparse categories)
       const maxStepMs = (t1 - t0) / 40;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 2;
       ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
       const lodT0 = performance.now();
       for (const [category, arr] of dataByCategory) {
         const pts = arr.length > bins ? downsampleLOD(arr, t0, t1, bins) : arr;
-        ctx.strokeStyle = CATEGORY_COLORS[category] ?? '#38bdf8';
+        const color = CATEGORY_COLORS[category] ?? '#38bdf8';
+        ctx.strokeStyle = color;
         ctx.beginPath();
         let prev: DataPoint | null = null;
         for (let i = 0; i < pts.length; i++) {
@@ -181,6 +183,30 @@ export default function LineChart() {
           prev = pts[i];
         }
         ctx.stroke();
+
+        // soft gradient area under the line
+        if (pts.length > 1) {
+          const grad = ctx.createLinearGradient(0, top, 0, bottom);
+          grad.addColorStop(0, color + '33');
+          grad.addColorStop(1, color + '00');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(X(pts[0].timestamp), bottom);
+          for (let i = 0; i < pts.length; i++) {
+            const x = X(pts[i].timestamp);
+            const y = Y(pts[i].value);
+            if (i > 0 && pts[i].timestamp - pts[i - 1].timestamp > maxStepMs) {
+              // close the previous segment's area, restart after the gap
+              ctx.lineTo(x, bottom);
+              ctx.lineTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.lineTo(X(pts[pts.length - 1].timestamp), bottom);
+          ctx.closePath();
+          ctx.fill();
+        }
       }
       dataPerf.lodMs = performance.now() - lodT0;
     }

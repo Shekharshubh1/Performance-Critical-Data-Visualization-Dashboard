@@ -24,33 +24,28 @@ export default function LineChart() {
     return [plotData[0].timestamp, plotData[plotData.length - 1].timestamp];
   }, [viewport, plotData]);
 
-  const dataByCategory = useMemo(() => {
+  // single O(window) pass per data tick: category split + value extents
+  const windowed = useMemo(() => {
     const i0 = Math.max(0, findIndexBefore(plotData, t0));
     const i1 = findIndexBefore(plotData, t1);
     const by = new Map<string, DataPoint[]>();
+    let min = Infinity;
+    let max = -Infinity;
     // index-bounded scan — no slice copy of the (possibly 100k-point) window
     for (let i = i0; i <= i1; i++) {
       const p = plotData[i];
       let arr = by.get(p.category);
       if (!arr) by.set(p.category, (arr = []));
       arr.push(p);
+      if (p.value < min) min = p.value;
+      if (p.value > max) max = p.value;
     }
-    return by;
+    return { by, min: min === Infinity ? 0 : min, max: max === Infinity ? 1 : max };
   }, [plotData, t0, t1]);
 
-  const [vMin, vMax] = useMemo(() => {
-    let min = Infinity;
-    let max = -Infinity;
-    for (const arr of dataByCategory.values()) {
-      for (const p of arr) {
-        if (p.value < min) min = p.value;
-        if (p.value > max) max = p.value;
-      }
-    }
-    return min === Infinity ? ([0, 1] as const) : ([min, max] as const);
-  }, [dataByCategory]);
+  const dataByCategory = windowed.by;
 
-  const yTicks = useMemo(() => niceTicks(vMin, vMax, 5), [vMin, vMax]);
+  const yTicks = useMemo(() => niceTicks(windowed.min, windowed.max, 5), [windowed]);
   const xTicks = useMemo(() => {
     const n = 6;
     return Array.from({ length: n + 1 }, (_, i) => t0 + ((t1 - t0) * i) / n);

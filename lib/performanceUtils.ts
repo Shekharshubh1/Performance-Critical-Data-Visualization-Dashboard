@@ -5,7 +5,7 @@
 type FrameCallback = (now: number) => void;
 
 const callbacks = new Set<FrameCallback>();
-let running = false;
+let rafPending = false;
 const frameTimes: number[] = [];
 let onFrame: ((fps: number, frameTime: number) => void) | null = null;
 
@@ -14,6 +14,7 @@ export function setFrameObserver(fn: ((fps: number, frameTime: number) => void) 
 }
 
 function loop(now: number) {
+  rafPending = false;
   const t0 = performance.now();
   for (const cb of callbacks) cb(now);
   const dt = performance.now() - t0;
@@ -23,14 +24,17 @@ function loop(now: number) {
   const fps = frameTimes.length > 1 ? (frameTimes.length - 1) : 0;
   onFrame?.(fps, dt);
 
-  if (callbacks.size > 0) requestAnimationFrame(loop);
-  else running = false;
+  // exactly one rAF in flight at any time, regardless of subscribe/unsubscribe races
+  if (callbacks.size > 0 && !rafPending) {
+    rafPending = true;
+    requestAnimationFrame(loop);
+  }
 }
 
 export function scheduleFrame(cb: FrameCallback): () => void {
   callbacks.add(cb);
-  if (!running && typeof window !== 'undefined') {
-    running = true;
+  if (!rafPending && typeof window !== 'undefined') {
+    rafPending = true;
     requestAnimationFrame(loop);
   }
   return () => {

@@ -10,9 +10,40 @@ import { MARGIN } from './chartTheme';
 
 const BUCKETS = 80;
 
+/**
+ * Multi-stop color ramp for value density (low -> high):
+ * deep navy -> blue -> teal -> green -> yellow -> red.
+ * Stops are shared by the canvas cells and the SVG legend.
+ */
+const HEAT_STOPS: Array<[number, number, number, number]> = [
+  [0.0, 11, 26, 58],
+  [0.2, 30, 100, 220],
+  [0.4, 0, 210, 195],
+  [0.6, 110, 230, 90],
+  [0.8, 255, 200, 70],
+  [1.0, 255, 80, 80],
+];
+
+function heatColor(t: number): string {
+  const x = Math.min(1, Math.max(0, t));
+  for (let i = 1; i < HEAT_STOPS.length; i++) {
+    const [t1, r1, g1, b1] = HEAT_STOPS[i];
+    const [t0, r0, g0, b0] = HEAT_STOPS[i - 1];
+    if (x <= t1) {
+      const f = (x - t0) / (t1 - t0);
+      const r = Math.round(r0 + f * (r1 - r0));
+      const g = Math.round(g0 + f * (g1 - g0));
+      const b = Math.round(b0 + f * (b1 - b0));
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+  return 'rgb(255,80,80)';
+}
+
 /** Value density heat: time (x) × category (y), intensity = avg value. */
 export default function Heatmap() {
   const { rangeData } = useDataWindow();
+
   const [containerRef, size] = useElementSize<HTMLDivElement>();
 
   const grid = useMemo(() => {
@@ -42,30 +73,23 @@ export default function Heatmap() {
     return m;
   }, [grid]);
 
-  const { canvasRef } = useChartRenderer(
-    ({ ctx, width, height }) => {
-      const left = MARGIN.left;
-      const right = width - MARGIN.right;
-      const top = MARGIN.top;
-      const bottom = height - MARGIN.bottom;
-      const cellW = (right - left) / BUCKETS;
-      const cellH = (bottom - top) / CATEGORIES.length;
+  const { canvasRef } = useChartRenderer(({ ctx, width, height }) => {
+    const left = MARGIN.left;
+    const right = width - MARGIN.right;
+    const top = MARGIN.top;
+    const bottom = height - MARGIN.bottom;
+    const cellW = (right - left) / BUCKETS;
+    const cellH = (bottom - top) / CATEGORIES.length;
 
-      for (let b = 0; b < BUCKETS; b++) {
-        for (let c = 0; c < CATEGORIES.length; c++) {
-          const cell = grid.cells[b][c];
-          const intensity = cell.n === 0 ? 0 : cell.v / cell.n / maxAvg;
-          // dark slate -> cyan ramp
-          const r = Math.round(15 + intensity * 56);
-          const g = Math.round(23 + intensity * 189);
-          const bl = Math.round(42 + intensity * 248);
-          ctx.fillStyle = `rgb(${r},${g},${bl})`;
-          ctx.fillRect(left + b * cellW, top + c * cellH, Math.ceil(cellW), Math.ceil(cellH) - 1);
-        }
+    for (let b = 0; b < BUCKETS; b++) {
+      for (let c = 0; c < CATEGORIES.length; c++) {
+        const cell = grid.cells[b]?.[c];
+        const intensity = !cell || cell.n === 0 ? 0 : cell.v / cell.n / maxAvg;
+        ctx.fillStyle = heatColor(intensity);
+        ctx.fillRect(left + b * cellW, top + c * cellH, Math.ceil(cellW), Math.ceil(cellH) - 1);
       }
-    },
-
-  );
+    }
+  });
 
   const plotH = Math.max(1, size.height - MARGIN.top - MARGIN.bottom);
   const rowH = plotH / CATEGORIES.length;
@@ -91,8 +115,9 @@ export default function Heatmap() {
           <>
             <defs>
               <linearGradient id="heatLegend" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="rgb(15,23,42)" />
-                <stop offset="100%" stopColor="rgb(71,212,255)" />
+                {HEAT_STOPS.map(([t, r, g, b]) => (
+                  <stop key={t} offset={`${t * 100}%`} stopColor={`rgb(${r},${g},${b})`} />
+                ))}
               </linearGradient>
             </defs>
             {/* intensity legend */}

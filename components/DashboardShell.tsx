@@ -15,7 +15,7 @@ import PerformanceMonitor from '@/components/ui/PerformanceMonitor';
 
 function Panel({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 shadow-lg shadow-black/20 backdrop-blur transition-colors hover:border-slate-700/80">
+    <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/70 shadow-lg shadow-black/20 transition-colors hover:border-slate-700/80">
       <header className="flex items-center gap-2.5 border-b border-slate-800/60 px-4 py-2.5">
         <span className="h-3.5 w-1 rounded-full bg-gradient-to-b from-sky-400 to-indigo-500" aria-hidden />
         <h2 className="text-sm font-semibold tracking-wide text-slate-200">{title}</h2>
@@ -75,10 +75,9 @@ export default function DashboardShell() {
                     : 'bg-amber-500/10 text-amber-300 ring-amber-500/30'
               }`}
             >
-              <span className="relative flex h-1.5 w-1.5">
-                {running && !stress && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
-                <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${stress ? 'bg-rose-400' : running ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-              </span>
+              <span
+                className={`inline-flex h-1.5 w-1.5 rounded-full ${stress ? 'bg-rose-400' : running ? 'bg-emerald-400' : 'bg-amber-400'}`}
+              />
               {stress ? 'stress' : running ? 'live' : 'paused'}
             </span>
           </div>

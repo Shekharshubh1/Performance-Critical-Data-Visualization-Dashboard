@@ -2,6 +2,8 @@
 
 A real-time dashboard that renders **10,000+ live data points at 60fps**, built with **Next.js 14 App Router + TypeScript**. All charts are built **from scratch on Canvas + SVG** — no Chart.js, no D3.
 
+> **🔗 Live demo:** [performancecriticalvisualization.vercel.app/dashboard](https://performancecriticalvisualization.vercel.app/dashboard)
+
 ## Features
 
 ![Dashboard overview](public/screenshots/dashboard.png)
@@ -30,7 +32,7 @@ npm run build
 npm start
 ```
 
-Open **http://localhost:3000/dashboard**.
+Open **http://localhost:3000/dashboard**, or use the deployed demo: **https://performancecriticalvisualization.vercel.app/dashboard**.
 
 ## Performance Testing
 
